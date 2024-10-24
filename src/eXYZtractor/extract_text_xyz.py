@@ -6,9 +6,9 @@ def combine_strings(char_list):
     return result
 
 def check_and_extract_matching_part(line, pattern):
-    match = re.search(pattern, line)
-    if match:
-        return True, match.group(0)
+    matches = re.findall(pattern, line)
+    if matches:
+        return True, '\n'.join([' '.join(match) if isinstance(match, tuple) else match for match in matches])
     else:
         return False, None
     
@@ -55,7 +55,8 @@ def get_xyz_from_pdf(path, prefix=None):
 
     #pattern_match = r'\b([A-Z][a-z]?|\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)' #original
     #pattern_match = r'^\s*\b([A-Z][a-z]?|\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)' #no whitespaces, fucks with page-break
-    pattern_match = r'(?<![\d.])\b([A-Z][a-z]?|\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)'
+    #pattern_match = r'(?<![\d.])\b([A-Z][a-z]?|\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)' #first character not part of float
+    pattern_match = r'\s+\b([A-Z][a-z]?|\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)' #at least one white space before first character
     reader = PdfReader(path)
 
     text_ongoing = False
@@ -63,9 +64,19 @@ def get_xyz_from_pdf(path, prefix=None):
     preceding_lines = []
     num_xyzs = 0
 
+    # CAN BE PLAYED AROUND WITH FOR HEADER
+    #def visitor_body(text, cm, tm, fontDict, fontSize):
+    #    y = tm[5]
+    #    if y > 50 and y < 720:
+    #        parts.append(text)
+
     for page_num in range(len(reader.pages)):
 
+    #    parts = []
+
         page = reader.pages[page_num]
+     #   text = page.extract_text(visitor_text=visitor_body)
+     #   text = "".join(parts)
         text = page.extract_text()
         text = combine_strings(text)
 
