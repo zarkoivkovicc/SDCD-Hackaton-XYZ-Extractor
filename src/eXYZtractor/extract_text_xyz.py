@@ -53,7 +53,9 @@ def determine_filename(relevant_lines, detected_text, num_xyzs, prefix):
 
 def get_xyz_from_pdf(path, prefix=None):
 
-    pattern_match = r'\b([A-Z][a-z]?|\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)'
+    #pattern_match = r'\b([A-Z][a-z]?|\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)' #original
+    #pattern_match = r'^\s*\b([A-Z][a-z]?|\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)' #no whitespaces, fucks with page-break
+    pattern_match = r'(?<![\d.])\b([A-Z][a-z]?|\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)'
     reader = PdfReader(path)
 
     text_ongoing = False
@@ -89,5 +91,10 @@ def get_xyz_from_pdf(path, prefix=None):
                 write_text_to_xyz(fname=output_fname, text=detected_text)
                 detected_text = []
                 num_xyzs += 1
+
+    if len(detected_text) > 0:
+        output_fname = determine_filename(comment_lines, detected_text, num_xyzs, prefix)
+        write_text_to_xyz(fname=output_fname, text=detected_text)
+        num_xyzs += 1
 
     print("Extraction complete")
