@@ -3,7 +3,7 @@ import os
 
 folder = 'example_pdfs'
 #path_list = [os.path.join(folder, file) for file in os.listdir(folder) if file.endswith('.pdf')]
-path_list = ['example_pdfs/example_text.pdf']
+path_list = ['example_pdfs/header_1.pdf']
 
 for i, path in enumerate(path_list):
     print(f"File {i}: {path}")
