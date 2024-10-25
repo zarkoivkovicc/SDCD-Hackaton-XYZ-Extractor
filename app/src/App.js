@@ -74,7 +74,7 @@ function App() {
         <img src={logo} alt="App Logo" className="app-logo" />
       </header>
       <div className="description-box">
-        <p>Upload your PDF files for processing. Click "Process Files" to start, and download each processed file individually using the provided links.</p>
+        <p>This tool allows you to parse XYZ tables from the chem papers and re-use them to recreate molecules. Simply Drag&Drop your PDF and click Process to extract tables in a xyz format</p>
       </div>
 
       <div className="upload-container">

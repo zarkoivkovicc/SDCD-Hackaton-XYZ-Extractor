@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os
 import zipfile
 from pathlib import Path
+from modules.eXYZractor import get_xyz_from_pdf
 
 app = Flask(__name__)
 CORS(app)
@@ -48,7 +49,7 @@ def upload():
         file.save(file_path)
 
         # Process the file and get a list of processed file paths
-        processed_files = process_pdf(file_path)
+        processed_files = get_xyz_from_pdf(file_path, file.filename.split('.')[0])
 
         # Create URLs for each processed file
         processed_file_urls.extend([
@@ -65,10 +66,12 @@ def upload():
 # Endpoint to serve processed files
 @app.route('/download/<filename>', methods=['GET'])
 def download_file(filename):
-    return send_from_directory(PROCESSED_FOLDER, filename, as_attachment=True)
+    root_dir = os.getcwd()
+    return send_from_directory(f'{root_dir}/{PROCESSED_FOLDER}', filename, as_attachment=True)
 
 @app.route('/download_zip', methods=['GET'])
 def download_zip():
+    root_dir = os.getcwd()
     zip_filename = 'processed_files.zip'
     zip_path = os.path.join(PROCESSED_FOLDER, zip_filename)
     
@@ -79,7 +82,7 @@ def download_zip():
                 zip_file.write(file_path, os.path.relpath(file_path, PROCESSED_FOLDER))  # Maintain folder structure
                 print(f'Added {file_path} to {zip_path}')
 
-    return send_from_directory(PROCESSED_FOLDER, zip_filename, as_attachment=True)
+    return send_from_directory(f'{root_dir}/{PROCESSED_FOLDER}', zip_filename, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(port=5000)
