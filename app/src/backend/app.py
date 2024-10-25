@@ -66,23 +66,24 @@ def upload():
 # Endpoint to serve processed files
 @app.route('/download/<filename>', methods=['GET'])
 def download_file(filename):
-    root_dir = os.getcwd()
-    return send_from_directory(f'{root_dir}/{PROCESSED_FOLDER}', filename, as_attachment=True)
+    root_dir = f'{os.getcwd()}/{PROCESSED_FOLDER}'
+    return send_from_directory(root_dir, filename, as_attachment=True)
 
 @app.route('/download_zip', methods=['GET'])
 def download_zip():
-    root_dir = os.getcwd()
+    root_dir = f'{os.getcwd()}/{PROCESSED_FOLDER}'
     zip_filename = 'processed_files.zip'
-    zip_path = os.path.join(PROCESSED_FOLDER, zip_filename)
+    zip_path = os.path.join(root_dir, zip_filename)
     
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_STORED) as zip_file:
-        for filename in os.listdir(PROCESSED_FOLDER):
-            if filename.endswith('.pdf'):  # Adjust this condition to include only PDFs
-                file_path = os.path.join(PROCESSED_FOLDER, filename)
+        for filename in os.listdir(root_dir):
+            if filename.endswith('.xyz'):  # Adjust this condition to include only PDFs
+                file_path = os.path.join(root_dir, filename)
+                print(file_path)
                 zip_file.write(file_path, os.path.relpath(file_path, PROCESSED_FOLDER))  # Maintain folder structure
                 print(f'Added {file_path} to {zip_path}')
 
-    return send_from_directory(f'{root_dir}/{PROCESSED_FOLDER}', zip_filename, as_attachment=True)
+    return send_from_directory(root_dir, zip_filename, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(port=5000)
